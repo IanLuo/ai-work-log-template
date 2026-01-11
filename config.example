@@ -1,0 +1,6 @@
+# AI Work Log Configuration
+# Copy this file to 'config' (in the same directory as scripts) and customize
+
+# Default log file name (without .md extension)
+# If not set or file doesn't exist, scripts will prompt you to select
+DEFAULT_LOG="Ian-Work-Stream-2026"

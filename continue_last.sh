@@ -4,12 +4,15 @@
 #    Shows the most recent entry + ready-to-paste header
 # ------------------------------------------------------------------------------
 
-LOG_DIR="${HOME}/Documents/ai-work-log"
-DEFAULT_LOG="Ian-Work-Stream-2026.md"
-LOG_FILE="$LOG_DIR/$DEFAULT_LOG"
+# Load shared config library
+source "$(dirname "$0")/lib_config.sh"
 
-if [ ! -f "$LOG_FILE" ]; then
-    echo "Log file not found: $LOG_FILE"
+SCRIPT_DIR=$(get_script_dir "$0")
+load_config "$SCRIPT_DIR"
+LOG_FILE=$(select_log_file "$SCRIPT_DIR")
+
+if [ -z "$LOG_FILE" ] || [ ! -f "$LOG_FILE" ]; then
+    echo "No log file found. Run ./setup.sh first!"
     exit 1
 fi
 
@@ -21,8 +24,9 @@ echo "Continuing from most recent entry:"
 echo ""
 
 # Extract the very last dated block (most recent)
-awk '/^## [0-9]{4}-[0-9]{2}-[0-9]{2}/ {p=1} p' "$LOG_FILE" | tac | 
-  awk '/^## [0-9]{4}-[0-9]{2}-[0-9]{2}/ {p=1; print; exit} p' | tac
+# Works on macOS (no tac command) by using tail -r
+awk '/^## [0-9]{4}-[0-9]{2}-[0-9]{2}/ {p=1} p' "$LOG_FILE" | tail -r | 
+  awk '/^## [0-9]{4}-[0-9]{2}-[0-9]{2}/ {p=1; print; next} p {print; exit}' | tail -r
 
 echo ""
 echo "# You can add after this:"

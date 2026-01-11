@@ -8,13 +8,15 @@
 #      echo "My summary" | ./add_log.sh  # Pipe content
 # ------------------------------------------------------------------------------
 
-LOG_DIR="${HOME}/Documents/ai-work-log"
-DEFAULT_LOG="Ian-Work-Stream-2026.md"
-LOG_FILE="$LOG_DIR/$DEFAULT_LOG"
+# Load shared config library
+source "$(dirname "$0")/lib_config.sh"
 
-if [ ! -f "$LOG_FILE" ]; then
-    echo "Log file not found: $LOG_FILE"
-    echo "Run ./setup.sh first!"
+SCRIPT_DIR=$(get_script_dir "$0")
+load_config "$SCRIPT_DIR"
+LOG_FILE=$(select_log_file "$SCRIPT_DIR")
+
+if [ -z "$LOG_FILE" ] || [ ! -f "$LOG_FILE" ]; then
+    echo "No log file found. Run ./setup.sh first!"
     exit 1
 fi
 

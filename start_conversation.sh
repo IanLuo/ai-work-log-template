@@ -5,15 +5,15 @@
 #    (ready to be copied & pasted into a fresh AI conversation)
 # ------------------------------------------------------------------------------
 
-LOG_DIR="${HOME}/Documents/ai-work-log"
-DEFAULT_LOG="Ian-Work-Stream-2026.md"
+# Load shared config library
+source "$(dirname "$0")/lib_config.sh"
 
-# You can change this or make it accept argument later
-LOG_FILE="$LOG_DIR/$DEFAULT_LOG"
+SCRIPT_DIR=$(get_script_dir "$0")
+load_config "$SCRIPT_DIR"
+LOG_FILE=$(select_log_file "$SCRIPT_DIR")
 
-if [ ! -f "$LOG_FILE" ]; then
-    echo "Log file not found: $LOG_FILE"
-    echo "Please run setup.sh first or check the path."
+if [ -z "$LOG_FILE" ] || [ ! -f "$LOG_FILE" ]; then
+    echo "No log file found. Run ./setup.sh first!"
     exit 1
 fi
 
@@ -56,9 +56,10 @@ echo "# === Recent context (last 10 entries or less) === #"
 echo ""
 
 # Show last 10 dated blocks (approximation)
+# Use tail -r on macOS instead of tac
 tail -n 400 "$LOG_FILE" | 
   awk '/^## [0-9]{4}-[0-9]{2}-[0-9]{2}/ {p=1} p&&/^## /&&NR>1 {exit} p' |
-  tac | head -n 200 | tac   # rough way to get recent blocks
+  tail -r | head -n 200 | tail -r   # rough way to get recent blocks
 
 echo ""
 echo "# === END OF PASTE CONTENT === #"
